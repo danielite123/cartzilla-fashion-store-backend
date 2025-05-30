@@ -15,7 +15,7 @@ datasource db {
 
 enum Role {
   ADMIN
-  CUSTOMER
+  USER
 }
 
 model User {
@@ -27,7 +27,7 @@ model User {
   address String @default("")
   contact String @default("")
   DOB String @default("")
-  role Role @default(CUSTOMER)
+  role Role @default(USER)
   cart Cart[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,7 +49,7 @@ model Product {
 
 model Category {
   id String @default(uuid()) @id
-  name String
+  name String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -12,6 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { AdminGuard } from 'src/guards/admin.guard';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -21,8 +22,8 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  @Get('profile')
   @UseGuards(AuthGuard)
+  @Get('profile')
   async getProfile(@Req() req: { userId: string }) {
     const userId = req.userId;
     const user = await this.usersService.getProfile(userId);
@@ -32,8 +33,8 @@ export class UsersController {
     return user;
   }
 
-  @Delete('delete')
   @UseGuards(AuthGuard)
+  @Delete('delete')
   async deleteProfile(@Req() req: { userId: string }) {
     const userId = req.userId;
     const deleteUser = await this.usersService.deleteUserById(userId);
@@ -43,8 +44,8 @@ export class UsersController {
     return { msg: 'User deleted' };
   }
 
-  @Patch('update')
   @UseGuards(AuthGuard)
+  @Patch('update')
   async updateProfile(
     @Req() req: { userId: string },
     @Body() data: UpdateUserDto,
@@ -57,8 +58,8 @@ export class UsersController {
     return { msg: 'updated', data };
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Get('all-users')
-  @UseGuards(AuthGuard)
   getAllUser() {
     return this.usersService.getAllUser();
   }

@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { AuthenticatedRequest } from 'src/common/authenticated-request';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(
@@ -30,9 +30,17 @@ export class AuthGuard implements CanActivate {
         userId: string | number;
         role: Role;
       }>(token);
+
+      if (payload.role !== Role.ADMIN) {
+        throw new UnauthorizedException('Access denied: Admins only');
+      }
+
       request.userId = payload.userId;
       request.role = payload.role;
     } catch (e: any) {
+      if (e instanceof UnauthorizedException) {
+        throw e;
+      }
       Logger.error(e);
       throw new UnauthorizedException('Invalid Token');
     }
