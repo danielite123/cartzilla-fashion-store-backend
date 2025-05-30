@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -28,6 +28,30 @@ export class CategoriesService {
         id,
       },
     });
+  }
+
+  async updateCatgory(id: string, data: UpdateCategoryDto) {
+    const findCategory = await this.getACategoryBy(id);
+
+    if (!findCategory) throw new HttpException('Category not found', 404);
+
+    if (data.name) {
+      const categoryExist = await this.prisma.category.findUnique({
+        where: { name: data.name },
+      });
+
+      if (categoryExist) throw new HttpException('Category already exist', 404);
+    }
+
+    return this.prisma.category.update({ where: { id }, data });
+  }
+
+  async deleteCatgory(id: string) {
+    const findCategory = await this.getACategoryBy(id);
+
+    if (!findCategory) throw new HttpException('Category not found', 404);
+
+    return this.prisma.category.delete({ where: { id } });
   }
 
   async getAllCategories() {

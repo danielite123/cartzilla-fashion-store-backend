@@ -1,14 +1,16 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
 
@@ -26,6 +28,18 @@ export class CategoriesController {
   @UseGuards(AuthGuard, AdminGuard)
   getAllCategories() {
     return this.categoryService.getAllCategories();
+  }
+
+  @Patch('edit/:id')
+  @UseGuards(AuthGuard, AdminGuard)
+  updateCategory(@Param('id') id: string, @Body() data: UpdateCategoryDto) {
+    return this.categoryService.updateCatgory(id, data);
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(AuthGuard, AdminGuard)
+  deleteCategory(@Param('id') id: string) {
+    return this.categoryService.deleteCatgory(id);
   }
 
   @Get(':id')
