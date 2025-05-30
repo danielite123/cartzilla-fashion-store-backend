@@ -20,10 +20,13 @@ enum Role {
 
 model User {
   id String @default(uuid()) @id
-  fullname String
+  firstname String
+  lastname String
   email String @unique()
   password String
   address String @default("")
+  contact String @default("")
+  DOB String @default("")
   role Role @default(CUSTOMER)
   cart Cart[]
   createdAt DateTime @default(now())

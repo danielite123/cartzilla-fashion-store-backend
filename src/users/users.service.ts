@@ -1,26 +1,21 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async createUser(
-    dto: CreateUserDto,
-  ): Promise<{ message: string; access_token: string }> {
+  async createUser(dto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     try {
       const user = await this.prisma.user.create({
         data: {
-          fullname: dto.fullname,
+          firstname: dto.firstname,
+          lastname: dto.lastname,
           email: dto.email,
           password: hashedPassword,
         },
@@ -29,10 +24,7 @@ export class UsersService {
         },
       });
 
-      const payload = { sub: user.id, email: user.email };
-      const token = await this.jwtService.signAsync(payload);
-
-      return { message: 'User created successfully', access_token: token };
+      return { message: 'User Created Sucessfully', user };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002')
@@ -42,25 +34,42 @@ export class UsersService {
     }
   }
 
-  async loginUser(
-    dto: LoginUserDto,
-  ): Promise<{ message: string; access_token: string }> {
-    const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+  getProfile(userId: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
+  }
 
-    if (!user) throw new HttpException('Invalid Email', 404);
+  async deleteUserById(userId: string) {
+    const findUser = await this.getProfile(userId);
 
-    const passwordMatch = await bcrypt.compare(dto.password, user.password);
+    if (!findUser) throw new HttpException('User not found', 404);
 
-    if (!passwordMatch) throw new HttpException('Incorrect Password', 404);
+    return this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+  }
 
-    const payload = { sub: user.id, email: user.email };
-    const token = await this.jwtService.signAsync(payload);
+  async updateUser(userId: string, data: UpdateUserDto) {
+    const findUser = await this.getProfile(userId);
 
-    return {
-      message: 'Login successful',
-      access_token: token,
-    };
+    if (!findUser) throw new HttpException('User not found', 404);
+
+    if (data.email) {
+      const emailExist = await this.prisma.user.findUnique({
+        where: { email: data.email },
+      });
+      if (emailExist) throw new HttpException('User already exist', 400);
+    }
+
+    return this.prisma.user.update({ where: { id: userId }, data });
+  }
+
+  getAllUser() {
+    return this.prisma.user.findMany();
   }
 }
