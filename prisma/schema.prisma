@@ -33,12 +33,21 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Image{
+  id        String   @id @default(uuid())
+  url       String
+  publicId  String
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String? 
+  createdAt DateTime @default(now())
+}
+
 model Product {
   id String @default(uuid()) @id
   name String
   description String
   washingInstruction String
-  image_url String
+  images    Image[]
   price Int
   stock Int
   size String[]
