@@ -195,4 +195,10 @@ export class UploadService {
 
     return this.prisma.image.delete({ where: { id } });
   }
+
+  findImageById(id: string) {
+    return this.prisma.image.findUnique({
+      where: { id },
+    });
+  }
 }

@@ -13,6 +13,7 @@ import {
   HttpStatus,
   Delete,
   Param,
+  Get,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService, FileDetail } from './upload.service';
@@ -83,5 +84,10 @@ export class UploadController {
   @Delete('/delete/:id')
   deleteImage(@Param('id') id: string) {
     return this.uploadService.deleteImage(id);
+  }
+
+  @Get(':id')
+  getImageById(@Param('id') id: string) {
+    return this.uploadService.findImageById(id);
   }
 }
