@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { AuthenticatedRequest } from 'src/common/authenticated-request';
+import { AuthenticatedRequest } from './authenticated-request';
 
 @Injectable()
 export class AdminGuard implements CanActivate {

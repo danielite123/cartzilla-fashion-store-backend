@@ -15,6 +15,10 @@ export class ProductsService {
         price: dto.price,
         stock: dto.stock,
         size: dto.size,
+        categoryId: dto.categoryId,
+      },
+      include: {
+        category: true,
       },
     });
 
