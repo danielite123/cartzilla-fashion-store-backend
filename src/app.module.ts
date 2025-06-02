@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UploadModule } from './upload/upload.module';
 import { CloudinaryModule } from './upload/cloudinary/cloudinary.module';
+import { ColorsModule } from './colors/colors.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CloudinaryModule } from './upload/cloudinary/cloudinary.module';
     AuthModule,
     UploadModule,
     CloudinaryModule,
+    ColorsModule,
   ],
 })
 export class AppModule {}
