@@ -10,7 +10,9 @@ export class ColorsService {
     private imageService: UploadService,
   ) {}
 
-  async create(dto: CreateColorVariantDto | CreateColorVariantDto[]) {
+  async createColorVariants(
+    dto: CreateColorVariantDto | CreateColorVariantDto[],
+  ) {
     if (Array.isArray(dto)) {
       const imageIds = dto.map((d) => d.imageId);
       const images = await this.prisma.image.findMany({
@@ -40,7 +42,7 @@ export class ColorsService {
     });
   }
 
-  async delete(id: string) {
+  async deleteColorVariant(id: string) {
     const color = await this.prisma.colorVariant.findUnique({ where: { id } });
 
     if (!color) {
@@ -49,5 +51,15 @@ export class ColorsService {
 
     await this.prisma.colorVariant.delete({ where: { id } });
     return this.imageService.deleteImage(color.imageId);
+  }
+
+  async getColorVariant(id: string) {
+    const color = await this.prisma.colorVariant.findUnique({ where: { id } });
+
+    if (!color) {
+      throw new NotFoundException(`ColorVariant with id ${id} not found`);
+    }
+
+    return this.prisma.colorVariant.findUnique({ where: { id } });
   }
 }
