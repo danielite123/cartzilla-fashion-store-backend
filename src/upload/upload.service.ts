@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { Image } from '@prisma/client';
 import { v2 as cloudinary } from 'cloudinary';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UploadService {
@@ -17,7 +18,11 @@ export class UploadService {
     private cloudinary: CloudinaryService,
   ) {}
 
-  async uploadMultipleImages(files: Express.Multer.File[]) {
+  async uploadMultipleImages(
+    files: Express.Multer.File[],
+    uploadSessionId?: string,
+  ) {
+    const sessionId = uploadSessionId || uuidv4();
     const uploadedImages: Image[] = [];
 
     for (const file of files) {
@@ -28,6 +33,7 @@ export class UploadService {
           data: {
             url: cloudinaryResponse.secure_url,
             publicId: cloudinaryResponse.public_id,
+            uploadSessionId: sessionId,
           },
         });
         uploadedImages.push(savedImage);
@@ -41,7 +47,35 @@ export class UploadService {
         );
       }
     }
-    return uploadedImages;
+    return {
+      sessionId,
+      uploadedImages,
+    };
+  }
+
+  async uploadSingleImage(file: Express.Multer.File) {
+    try {
+      const cloudinaryResponse = await this.cloudinary.uploadFile(file);
+
+      const savedImage: Image = await this.prisma.image.create({
+        data: {
+          url: cloudinaryResponse.secure_url,
+          publicId: cloudinaryResponse.public_id,
+        },
+      });
+
+      return {
+        uploadedImage: savedImage,
+      };
+    } catch (error) {
+      console.error(
+        `Failed to upload or save image: ${file.originalname}`,
+        error,
+      );
+      throw new InternalServerErrorException(
+        `Failed to process image ${file.originalname}. Error: ${error.message}`,
+      );
+    }
   }
 
   async deleteImage(id: string) {

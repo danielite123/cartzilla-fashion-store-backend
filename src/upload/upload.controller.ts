@@ -10,8 +10,9 @@ import {
   Body,
   Delete,
   Param,
+  UploadedFile,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 
 @Controller('upload')
@@ -38,6 +39,24 @@ export class UploadController {
     );
 
     return this.imageService.uploadMultipleImages(files);
+  }
+
+  @Post('upload-single')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadSingleImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+        fileIsRequired: true,
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log('Received file:', file.originalname);
+    return this.imageService.uploadSingleImage(file);
   }
 
   @Delete('/delete/:id')

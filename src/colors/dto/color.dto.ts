@@ -1,5 +1,11 @@
 // src/color-variant/dto/create-color-variant.dto.ts
-import { IsNotEmpty, IsString, IsHexColor, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsHexColor,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateColorVariantDto {
   @IsNotEmpty()
@@ -12,4 +18,8 @@ export class CreateColorVariantDto {
 
   @IsUUID()
   imageId: string;
+
+  @IsOptional()
+  @IsString()
+  colorSessionId?: string;
 }

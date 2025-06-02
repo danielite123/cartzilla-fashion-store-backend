@@ -19,9 +19,43 @@ export class ProductsService {
       },
       include: {
         category: true,
+        images: true,
       },
     });
 
-    return product;
+    if (dto.uploadSessionId) {
+      await this.prisma.image.updateMany({
+        where: {
+          uploadSessionId: dto.uploadSessionId,
+          productId: null,
+        },
+        data: {
+          productId: product.id,
+        },
+      });
+    }
+
+    if (dto.colorSessionId) {
+      await this.prisma.colorVariant.updateMany({
+        where: {
+          colorSessionId: dto.colorSessionId,
+          productId: null,
+        },
+        data: {
+          productId: product.id,
+        },
+      });
+    }
+
+    const productWithImages = await this.prisma.product.findUnique({
+      where: { id: product.id },
+      include: {
+        category: true,
+        images: true,
+        colorVariants: true,
+      },
+    });
+
+    return productWithImages;
   }
 }

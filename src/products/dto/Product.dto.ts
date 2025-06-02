@@ -1,5 +1,12 @@
 // src/products/dto/Product.dto.ts
-import { IsString, IsInt, IsArray, IsNumber, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsArray,
+  IsNumber,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -23,4 +30,12 @@ export class CreateProductDto {
 
   @IsUUID()
   categoryId: string;
+
+  @IsOptional()
+  @IsString()
+  uploadSessionId?: string;
+
+  @IsOptional()
+  @IsString()
+  colorSessionId?: string;
 }

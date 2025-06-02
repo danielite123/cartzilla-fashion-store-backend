@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateColorVariantDto } from './dto';
 import { UploadService } from 'src/upload/upload.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ColorsService {
@@ -11,23 +12,10 @@ export class ColorsService {
   ) {}
 
   async createColorVariants(
-    dto: CreateColorVariantDto | CreateColorVariantDto[],
+    dto: CreateColorVariantDto,
+    colorSessionId?: string,
   ) {
-    if (Array.isArray(dto)) {
-      const imageIds = dto.map((d) => d.imageId);
-      const images = await this.prisma.image.findMany({
-        where: { id: { in: imageIds } },
-      });
-
-      if (images.length !== dto.length) {
-        throw new NotFoundException('One or more image IDs are invalid');
-      }
-
-      return this.prisma.colorVariant.createMany({
-        data: dto,
-        skipDuplicates: true,
-      });
-    }
+    const sessionId = colorSessionId || uuidv4();
 
     const colorImage = await this.prisma.image.findUnique({
       where: { id: dto.imageId },
@@ -38,7 +26,7 @@ export class ColorsService {
     }
 
     return this.prisma.colorVariant.create({
-      data: dto,
+      data: { ...dto, colorSessionId: sessionId },
     });
   }
 

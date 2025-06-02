@@ -39,6 +39,7 @@ model Image{
   publicId  String
   product   Product? @relation(fields: [productId], references: [id])
   productId String? 
+  uploadSessionId String?
   colorVariant ColorVariant?
   createdAt DateTime @default(now())
 }
@@ -66,6 +67,7 @@ model ColorVariant {
   hex        String 
   product    Product?   @relation(fields: [productId], references: [id])
   productId  String?
+  colorSessionId String?
   imageId   String   @unique
   image     Image    @relation(fields: [imageId], references: [id])
 }
