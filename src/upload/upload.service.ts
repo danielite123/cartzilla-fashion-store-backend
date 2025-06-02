@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-floating-promises */
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { Image } from '@prisma/client';
+import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class UploadService {
@@ -36,5 +42,35 @@ export class UploadService {
       }
     }
     return uploadedImages;
+  }
+
+  async deleteImage(id: string) {
+    const image = await this.prisma.image.findUnique({ where: { id } });
+    if (!image) {
+      throw new NotFoundException(`Image with id ${id} not found`);
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      cloudinary.uploader.destroy(image.publicId, (error, result) => {
+        if (error) {
+          console.error('Cloudinary delete error:', error);
+          return reject(
+            new InternalServerErrorException(
+              `Failed to delete image from Cloudinary: ${error.message}`,
+            ),
+          );
+        }
+        if (result.result !== 'ok' && result.result !== 'not found') {
+          return reject(
+            new InternalServerErrorException(
+              `Cloudinary delete failed: ${result.result}`,
+            ),
+          );
+        }
+        resolve();
+      });
+    });
+
+    return this.prisma.image.delete({ where: { id } });
   }
 }

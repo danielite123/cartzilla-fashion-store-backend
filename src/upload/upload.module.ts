@@ -9,5 +9,6 @@ import { UploadService } from './upload.service';
   imports: [PrismaModule, CloudinaryModule],
   controllers: [UploadController],
   providers: [UploadService],
+  exports: [UploadService],
 })
 export class UploadModule {}

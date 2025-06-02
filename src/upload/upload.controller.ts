@@ -8,6 +8,8 @@ import {
   MaxFileSizeValidator,
   FileTypeValidator,
   Body,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
@@ -36,5 +38,10 @@ export class UploadController {
     );
 
     return this.imageService.uploadMultipleImages(files);
+  }
+
+  @Delete('/delete/:id')
+  deleteImage(@Param('id') id: string) {
+    return this.imageService.deleteImage(id);
   }
 }
