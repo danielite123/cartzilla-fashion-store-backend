@@ -12,22 +12,35 @@ export class ColorsService {
   ) {}
 
   async createColorVariants(
-    dto: CreateColorVariantDto,
+    dtos: CreateColorVariantDto[],
     colorSessionId?: string,
   ) {
     const sessionId = colorSessionId || uuidv4();
 
-    const colorImage = await this.prisma.image.findUnique({
-      where: { id: dto.imageId },
+    const imageIds = dtos.map((dto) => dto.imageId);
+    const images = await this.prisma.image.findMany({
+      where: { id: { in: imageIds } },
     });
 
-    if (!colorImage) {
-      throw new NotFoundException('Image not found');
+    if (images.length !== dtos.length) {
+      throw new NotFoundException('One or more images not found');
     }
 
-    return this.prisma.colorVariant.create({
-      data: { ...dto, colorSessionId: sessionId },
-    });
+    const createdVariants = await this.prisma.$transaction(
+      dtos.map((dto) =>
+        this.prisma.colorVariant.create({
+          data: {
+            ...dto,
+            colorSessionId: sessionId,
+          },
+        }),
+      ),
+    );
+
+    return {
+      sessionId,
+      variants: createdVariants,
+    };
   }
 
   async deleteColorVariant(id: string) {

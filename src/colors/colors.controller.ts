@@ -7,7 +7,7 @@ export class ColorsController {
   constructor(private readonly colorsService: ColorsService) {}
 
   @Post('create')
-  createColor(@Body() dto: CreateColorVariantDto) {
+  createColor(@Body() dto: CreateColorVariantDto[]) {
     return this.colorsService.createColorVariants(dto);
   }
 
