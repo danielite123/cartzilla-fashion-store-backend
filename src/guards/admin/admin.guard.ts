@@ -5,19 +5,20 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { SKIP_AUTH_KEY } from './auth.decorator';
 import { configurations } from 'src/config/configurations';
+import { Reflector } from '@nestjs/core';
+import { SKIP_AUTH_KEY } from '../auth.decorator';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from '@prisma/client';
 
 interface JwtPayload {
   userId: string;
-  [key: string]: any;
 }
+
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
@@ -33,13 +34,12 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       return true;
     }
-
     const request: Request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
 
     const errorMessage = {
-      message: 'Invalid or expired token',
-      errorCode: 'invalid_or_expired_access_token',
+      message: 'Unauthorized',
+      errorCode: 'unauthorized_user',
       statusCode: HttpStatus.UNAUTHORIZED,
     };
 
@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const user = await this.jwtService.verifyAsync<JwtPayload>(token, {
-        secret: process.env.JWT_SECRET || configurations().auth.jwt,
+        secret: configurations().auth.jwt,
       });
 
       const { userId } = user;
@@ -62,12 +62,18 @@ export class AuthGuard implements CanActivate {
       });
 
       request['user'] = { ...user, ...dbUser };
-    } catch {
+
+      if (dbUser.role !== Role.ADMIN) {
+        throw new UnauthorizedException({
+          ...errorMessage,
+        });
+      }
+    } catch (e) {
       throw new UnauthorizedException(errorMessage);
     }
-
     return true;
   }
+
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 

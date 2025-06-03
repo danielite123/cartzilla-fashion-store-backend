@@ -11,39 +11,38 @@ import {
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { AdminGuard } from 'src/guards/admin.guard';
+import { AuthenticateAdmin } from 'src/guards/admin/admin-auth.decorator';
+import { AdminAuthGuard } from 'src/guards/admin/admin.guard';
+import { SkipAuth } from 'src/guards/auth.decorator';
 
+@UseGuards(AdminAuthGuard)
+@AuthenticateAdmin()
 @Controller('categories')
 export class CategoriesController {
   constructor(private categoryService: CategoriesService) {}
 
   @Post('create')
-  @UseGuards(AuthGuard, AdminGuard)
   createCategory(@Body() data: CreateCategoryDto) {
     return this.categoryService.createCategory(data);
   }
 
+  @SkipAuth()
   @Get('all')
-  @UseGuards(AuthGuard, AdminGuard)
   getAllCategories() {
     return this.categoryService.getAllCategories();
   }
 
   @Patch('edit/:id')
-  @UseGuards(AuthGuard, AdminGuard)
   updateCategory(@Param('id') id: string, @Body() data: UpdateCategoryDto) {
     return this.categoryService.updateCatgory(id, data);
   }
 
   @Delete('delete/:id')
-  @UseGuards(AuthGuard, AdminGuard)
   deleteCategory(@Param('id') id: string) {
     return this.categoryService.deleteCatgory(id);
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard, AdminGuard)
   async getACategory(@Param('id') id: string) {
     const category = await this.categoryService.getACategoryBy(id);
 

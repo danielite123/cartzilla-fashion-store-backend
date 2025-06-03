@@ -28,17 +28,6 @@ export class CreateUserDto {
   password: string;
 }
 
-export class LoginUserDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
-  password: string;
-}
-
 export class UpdateUserDto {
   @IsOptional()
   @IsString()

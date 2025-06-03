@@ -5,24 +5,14 @@ import {
   Get,
   HttpException,
   Patch,
-  Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './dto';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { AdminGuard } from 'src/guards/admin.guard';
+import { UpdateUserDto } from './dto';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post('signup')
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
-  }
-
-  @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@Req() req: { userId: string }) {
     const userId = req.userId;
@@ -33,7 +23,6 @@ export class UsersController {
     return user;
   }
 
-  @UseGuards(AuthGuard)
   @Delete('delete')
   async deleteProfile(@Req() req: { userId: string }) {
     const userId = req.userId;
@@ -44,7 +33,6 @@ export class UsersController {
     return { msg: 'User deleted' };
   }
 
-  @UseGuards(AuthGuard)
   @Patch('update')
   async updateProfile(
     @Req() req: { userId: string },
@@ -58,7 +46,6 @@ export class UsersController {
     return { msg: 'updated', data };
   }
 
-  @UseGuards(AuthGuard, AdminGuard)
   @Get('all-users')
   getAllUser() {
     return this.usersService.getAllUser();

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule } from '@nestjs/common';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -10,10 +10,21 @@ import { JwtModule } from '@nestjs/jwt';
 import { UploadModule } from './upload/upload.module';
 import { CloudinaryModule } from './upload/cloudinary/cloudinary.module';
 import { ColorsModule } from './colors/colors.module';
+import { configurations } from './config/configurations';
+import { ConfigModule } from '@nestjs/config';
+import { GuardsModule } from './guards/guards.module';
 
 @Module({
   imports: [
-    JwtModule.register({ global: true, secret: process.env.JWT_SECRET }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configurations],
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET || configurations().auth.jwt,
+      signOptions: { expiresIn: '3d' },
+    }),
     ProductsModule,
     UsersModule,
     PrismaModule,
@@ -24,6 +35,9 @@ import { ColorsModule } from './colors/colors.module';
     UploadModule,
     CloudinaryModule,
     ColorsModule,
+    GuardsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure() {}
+}
