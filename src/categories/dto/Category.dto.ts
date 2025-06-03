@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString()
@@ -7,5 +7,6 @@ export class CreateCategoryDto {
 
 export class UpdateCategoryDto {
   @IsString()
+  @IsOptional()
   name?: string;
 }

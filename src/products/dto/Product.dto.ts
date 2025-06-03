@@ -45,27 +45,35 @@ export class CreateProductDto {
 
 export class UpdateProductDto {
   @IsString()
+  @IsOptional()
   name?: string;
 
+  @IsOptional()
   @IsString()
   description?: string;
 
+  @IsOptional()
   @IsString()
   washingInstruction?: string;
 
+  @IsOptional()
   @IsNumber()
   price?: number;
 
+  @IsOptional()
   @IsInt()
   stock?: number;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   size?: string[];
 
+  @IsOptional()
   @IsUUID()
   categoryId?: string;
 
+  @IsOptional()
   @IsUUID()
   brandId?: string;
 

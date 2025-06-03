@@ -25,14 +25,17 @@ export class CreateColorVariantDto {
 }
 
 export class UpdateColorVariantDto {
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   name?: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsHexColor()
   hex?: string;
 
+  @IsOptional()
   @IsUUID()
   imageId?: string;
 }

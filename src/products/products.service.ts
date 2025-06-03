@@ -86,6 +86,7 @@ export class ProductsService {
 
     return product;
   }
+
   async updateProduct(id: string, dto: UpdateProductDto) {
     const product = await this.prisma.product.findUnique({ where: { id } });
 
