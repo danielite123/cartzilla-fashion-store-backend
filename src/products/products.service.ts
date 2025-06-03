@@ -16,6 +16,7 @@ export class ProductsService {
         stock: dto.stock,
         size: dto.size,
         categoryId: dto.categoryId,
+        brandId: dto.brandId,
       },
       include: {
         category: true,

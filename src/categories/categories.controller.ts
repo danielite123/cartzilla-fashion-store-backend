@@ -42,6 +42,7 @@ export class CategoriesController {
     return this.categoryService.deleteCatgory(id);
   }
 
+  @SkipAuth()
   @Get(':id')
   async getACategory(@Param('id') id: string) {
     const category = await this.categoryService.getACategoryBy(id);

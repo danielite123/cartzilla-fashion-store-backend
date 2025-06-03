@@ -13,6 +13,7 @@ import { ColorsModule } from './colors/colors.module';
 import { configurations } from './config/configurations';
 import { ConfigModule } from '@nestjs/config';
 import { GuardsModule } from './guards/guards.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { GuardsModule } from './guards/guards.module';
     CloudinaryModule,
     ColorsModule,
     GuardsModule,
+    BrandsModule,
   ],
 })
 export class AppModule implements NestModule {
