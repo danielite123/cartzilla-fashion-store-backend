@@ -1,7 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ColorsService } from './colors.service';
 import { CreateColorVariantDto } from './dto';
+import { AdminAuthGuard } from 'src/guards/admin/admin.guard';
+import { AuthenticateAdmin } from 'src/guards/admin/admin-auth.decorator';
 
+@UseGuards(AdminAuthGuard)
+@AuthenticateAdmin()
 @Controller('colors')
 export class ColorsController {
   constructor(private readonly colorsService: ColorsService) {}
