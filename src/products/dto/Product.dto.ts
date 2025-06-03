@@ -42,3 +42,38 @@ export class CreateProductDto {
   @IsString()
   colorSessionId?: string;
 }
+
+export class UpdateProductDto {
+  @IsString()
+  name?: string;
+
+  @IsString()
+  description?: string;
+
+  @IsString()
+  washingInstruction?: string;
+
+  @IsNumber()
+  price?: number;
+
+  @IsInt()
+  stock?: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  size?: string[];
+
+  @IsUUID()
+  categoryId?: string;
+
+  @IsUUID()
+  brandId?: string;
+
+  @IsOptional()
+  @IsString()
+  uploadSessionId?: string;
+
+  @IsOptional()
+  @IsString()
+  colorSessionId?: string;
+}
