@@ -23,3 +23,16 @@ export class CreateColorVariantDto {
   @IsString()
   colorSessionId?: string;
 }
+
+export class UpdateColorVariantDto {
+  @IsNotEmpty()
+  @IsString()
+  name?: string;
+
+  @IsNotEmpty()
+  @IsHexColor()
+  hex?: string;
+
+  @IsUUID()
+  imageId?: string;
+}
