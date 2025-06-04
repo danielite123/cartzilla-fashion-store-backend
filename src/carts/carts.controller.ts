@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   Post,
   Req,
   UsePipes,
@@ -23,5 +25,44 @@ export class CartsController {
       dto.quantity,
       dto.size,
     );
+  }
+
+  @Get('get')
+  async getCart(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.getCart(userId);
+  }
+
+  @Delete('delete')
+  async removeItemFromCart(
+    @Req() req: { userId: string },
+    @Body() dto: { itemId: string },
+  ) {
+    const userId = req.userId;
+    return await this.cartService.removeItemFromCart(userId, dto.itemId);
+  }
+
+  @Delete('clear')
+  async clearCart(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.clearCart(userId);
+  }
+
+  @Get('count')
+  async getCartCount(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.getCartItemCount(userId);
+  }
+
+  @Get('total')
+  async getCartTotal(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.getCartTotal(userId);
+  }
+
+  @Get('items')
+  async getCartItems(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.getCartItems(userId);
   }
 }
