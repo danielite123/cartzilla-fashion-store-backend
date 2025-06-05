@@ -14,6 +14,7 @@ import { configurations } from './config/configurations';
 import { ConfigModule } from '@nestjs/config';
 import { GuardsModule } from './guards/guards.module';
 import { BrandsModule } from './brands/brands.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BrandsModule } from './brands/brands.module';
     ColorsModule,
     GuardsModule,
     BrandsModule,
+    WishlistModule,
   ],
 })
 export class AppModule implements NestModule {
