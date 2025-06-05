@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 
 @Controller('wishlist')
@@ -20,10 +28,10 @@ export class WishlistController {
     return await this.wishlistService.getWishlist(userId);
   }
 
-  @Delete('delete')
+  @Delete(':itemsId')
   async removeItemFromWishlist(
     @Req() req: { userId: string },
-    @Body('itemId') itemId: string,
+    @Param('itemId') itemId: string,
   ) {
     const userId = req.userId;
     return await this.wishlistService.removeItemFromWishlist(userId, itemId);
@@ -38,7 +46,7 @@ export class WishlistController {
   @Get(':itemsId')
   async getWishlistItems(
     @Req() req: { userId: string },
-    @Body('itemId') itemId: string,
+    @Param('itemId') itemId: string,
   ) {
     const userId = req.userId;
     return await this.wishlistService.getWishlistItem(userId, itemId);

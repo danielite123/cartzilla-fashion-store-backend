@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Req,
   UsePipes,
@@ -33,10 +34,10 @@ export class CartsController {
     return await this.cartService.getCart(userId);
   }
 
-  @Delete('delete')
+  @Delete(':itemId')
   async removeItemFromCart(
     @Req() req: { userId: string },
-    @Body() dto: { itemId: string },
+    @Param() dto: { itemId: string },
   ) {
     const userId = req.userId;
     return await this.cartService.removeItemFromCart(userId, dto.itemId);
