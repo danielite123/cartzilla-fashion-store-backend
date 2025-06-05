@@ -86,17 +86,42 @@ export class WishlistService {
     });
   }
 
-  async getWishlistCount(userId: string) {
+  async getWishlistItem(userId: string, itemId: string) {
     const wishlist = await this.prismaService.wishlist.findFirst({
       where: { userId },
+      include: {
+        items: {
+          where: { id: itemId },
+          include: {
+            product: true,
+          },
+        },
+      },
     });
 
-    if (!wishlist) {
-      return 0;
+    if (!wishlist || wishlist.items.length === 0) {
+      return null;
     }
 
-    return this.prismaService.wishlistItem.count({
-      where: { wishlistId: wishlist.id },
+    return wishlist.items[0];
+  }
+
+  async getWishlistItems(userId: string) {
+    const wishlist = await this.prismaService.wishlist.findFirst({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
     });
+
+    if (!wishlist || wishlist.items.length === 0) {
+      return null;
+    }
+
+    return wishlist.items;
   }
 }
