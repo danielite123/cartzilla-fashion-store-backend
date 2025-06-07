@@ -28,33 +28,33 @@ export class WishlistController {
     return await this.wishlistService.getWishlist(userId);
   }
 
-  @Delete(':itemsId')
-  async removeItemFromWishlist(
-    @Req() req: { userId: string },
-    @Param('itemId') itemId: string,
-  ) {
-    const userId = req.userId;
-    return await this.wishlistService.removeItemFromWishlist(userId, itemId);
-  }
-
   @Delete('clear')
   async clearWishlist(@Req() req: { userId: string }) {
     const userId = req.userId;
     return await this.wishlistService.clearWishlist(userId);
   }
 
-  @Get(':itemsId')
-  async getWishlistItems(
+  @Delete(':itemsId')
+  async removeItemFromWishlist(
     @Req() req: { userId: string },
-    @Param('itemId') itemId: string,
+    @Param('itemsId') itemId: string,
   ) {
     const userId = req.userId;
-    return await this.wishlistService.getWishlistItem(userId, itemId);
+    return await this.wishlistService.removeItemFromWishlist(userId, itemId);
   }
 
   @Get('items')
   async getWishlistItemsList(@Req() req: { userId: string }) {
     const userId = req.userId;
     return await this.wishlistService.getWishlistItems(userId);
+  }
+
+  @Get(':itemsId')
+  async getWishlistItems(
+    @Req() req: { userId: string },
+    @Param('itemsId') itemId: string,
+  ) {
+    const userId = req.userId;
+    return await this.wishlistService.getWishlistItem(userId, itemId);
   }
 }

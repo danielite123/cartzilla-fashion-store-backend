@@ -31,6 +31,7 @@ model User {
   cart Cart[]
   wishlist Wishlist[]
   reviews  Review[]
+  orders Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -56,6 +57,7 @@ model Product {
   stock Int
   size String[]
   cartItems CartItem[]
+  orderItems OrderItem[]
   wishlistItems WishlistItem[]
   colorVariants  ColorVariant[]
   brandId         String
@@ -148,3 +150,26 @@ model WishlistItem {
   product Product @relation(fields: [productId], references: [id])
   productId String
 }
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Int      // price at time of order (snapshot, not current price)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId    String
+  items     OrderItem[]
+  totalPrice Int
+  status String @default("In Progress")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

@@ -15,6 +15,8 @@ import { ConfigModule } from '@nestjs/config';
 import { GuardsModule } from './guards/guards.module';
 import { BrandsModule } from './brands/brands.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { WishlistModule } from './wishlist/wishlist.module';
     GuardsModule,
     BrandsModule,
     WishlistModule,
+    NotificationsModule,
+    OrdersModule,
   ],
 })
 export class AppModule implements NestModule {

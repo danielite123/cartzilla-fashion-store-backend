@@ -34,6 +34,12 @@ export class CartsController {
     return await this.cartService.getCart(userId);
   }
 
+  @Delete('clear')
+  async clearCart(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.cartService.clearCart(userId);
+  }
+
   @Delete(':itemId')
   async removeItemFromCart(
     @Req() req: { userId: string },
@@ -41,12 +47,6 @@ export class CartsController {
   ) {
     const userId = req.userId;
     return await this.cartService.removeItemFromCart(userId, dto.itemId);
-  }
-
-  @Delete('clear')
-  async clearCart(@Req() req: { userId: string }) {
-    const userId = req.userId;
-    return await this.cartService.clearCart(userId);
   }
 
   @Get('count')

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -19,10 +19,7 @@ export class WishlistService {
     });
 
     if (existingItem) {
-      await this.prismaService.wishlistItem.update({
-        where: { id: existingItem.id },
-        data: { wishlistId: wishlist.id, productId },
-      });
+      throw new HttpException('Product already in wishlist', 404);
     } else {
       return this.prismaService.wishlistItem.create({
         data: {
@@ -75,10 +72,11 @@ export class WishlistService {
   async clearWishlist(userId: string) {
     const wishlist = await this.prismaService.wishlist.findFirst({
       where: { userId },
+      select: { id: true },
     });
 
     if (!wishlist) {
-      return null;
+      throw new HttpException('Wishlist not found', 404);
     }
 
     return this.prismaService.wishlistItem.deleteMany({

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -51,7 +51,7 @@ export class CartsService {
     });
 
     if (!cart) {
-      return null;
+      throw new NotFoundException('Cart not found');
     }
 
     return {
@@ -72,7 +72,7 @@ export class CartsService {
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new NotFoundException('Cart not found');
     }
 
     const item = await this.prismaService.cartItem.findFirst({
@@ -80,7 +80,7 @@ export class CartsService {
     });
 
     if (!item) {
-      throw new Error('Item not found in cart');
+      throw new NotFoundException('Item not found in cart');
     }
 
     return this.prismaService.cartItem.delete({ where: { id: itemId } });
@@ -89,10 +89,11 @@ export class CartsService {
   async clearCart(userId: string) {
     const cart = await this.prismaService.cart.findFirst({
       where: { userId },
+      select: { id: true },
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new NotFoundException('Cart not found');
     }
 
     return this.prismaService.cartItem.deleteMany({
@@ -142,7 +143,7 @@ export class CartsService {
     });
 
     if (!cart) {
-      return [];
+      throw new NotFoundException('Cart not found');
     }
 
     return cart.items.map((item) => ({
