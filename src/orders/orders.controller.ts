@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { UpdateOrderDto } from './dto/Order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -23,7 +24,15 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async getOrderById(@Param('id') id: string) {
-    return await this.ordersService.getOrderById(id);
+  async getOrderById(@Param('id') orderId: string) {
+    return await this.ordersService.getOrderById(orderId);
+  }
+
+  @Patch(':id')
+  async updateStatus(
+    @Param('id') orderId: string,
+    @Body() dto: UpdateOrderDto,
+  ) {
+    return await this.ordersService.updateOrderStatus(orderId, dto);
   }
 }

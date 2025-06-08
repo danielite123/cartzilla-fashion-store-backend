@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { CartsService } from 'src/carts/carts.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateOrderDto } from './dto/Order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -153,5 +154,20 @@ export class OrdersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async updateOrderStatus(orderId: string, dto: UpdateOrderDto) {
+    const order = await this.prismaService.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return this.prismaService.order.update({
+      where: { id: orderId },
+      data: { status: dto.status },
+    });
   }
 }
