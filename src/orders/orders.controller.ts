@@ -1,4 +1,4 @@
-import { Controller, Post, Req } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -9,5 +9,10 @@ export class OrdersController {
   async createOrder(@Req() req: { userId: string }) {
     const userId = req.userId;
     return await this.ordersService.createOrder(userId);
+  }
+
+  @Get(':id')
+  async getOrderById(@Param('id') id: string) {
+    return await this.ordersService.getOrderById(id);
   }
 }
