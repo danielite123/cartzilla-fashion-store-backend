@@ -170,6 +170,7 @@ model Order {
   items     OrderItem[]
   totalPrice Int
   status String @default("In Progress")
+  trackingNumber String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -34,10 +34,13 @@ export class OrdersService {
         0,
       );
 
+      const trackingNumber = await this.generateUniqueTrackingNumber();
+
       const order = await this.prismaService.order.create({
         data: {
           userId,
           totalPrice,
+          trackingNumber,
           items: {
             create: cart.items.map((item) => ({
               productId: item.productId,
@@ -59,6 +62,28 @@ export class OrdersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async generateUniqueTrackingNumber(): Promise<string> {
+    let trackingNumber = '';
+    let exists = true;
+
+    while (exists) {
+      trackingNumber = Array.from({ length: 11 }, () => {
+        const pool =
+          Math.random() < 0.7 ? '0123456789' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return pool.charAt(Math.floor(Math.random() * pool.length));
+      }).join('');
+
+      const existing = await this.prismaService.order.findFirst({
+        where: { trackingNumber },
+        select: { id: true },
+      });
+
+      exists = !!existing;
+    }
+
+    return trackingNumber;
   }
 
   async getAllOrders() {
