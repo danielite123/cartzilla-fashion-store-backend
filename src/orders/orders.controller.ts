@@ -16,6 +16,12 @@ export class OrdersController {
     return this.ordersService.getAllOrders();
   }
 
+  @Get('user')
+  async getUserOrders(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.ordersService.getOrdersByUserId(userId);
+  }
+
   @Get(':id')
   async getOrderById(@Param('id') id: string) {
     return await this.ordersService.getOrderById(id);

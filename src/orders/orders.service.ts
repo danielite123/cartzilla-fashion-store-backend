@@ -78,6 +78,32 @@ export class OrdersService {
     }
   }
 
+  async getOrdersByUserId(userId: string) {
+    try {
+      const orders = await this.prismaService.order.findMany({
+        where: { userId },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      if (!orders || orders.length === 0) {
+        throw new NotFoundException('No orders found for this user');
+      }
+
+      return orders;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to retrieve orders for user: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getOrderById(orderId: string) {
     try {
       const order = await this.prismaService.order.findUnique({
