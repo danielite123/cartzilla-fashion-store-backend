@@ -158,7 +158,8 @@ model OrderItem {
   product   Product  @relation(fields: [productId], references: [id])
   productId String
   quantity  Int
-  price     Int      // price at time of order (snapshot, not current price)
+  price     Int 
+  size     String[]
   createdAt DateTime @default(now())
 }
 
