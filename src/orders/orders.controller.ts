@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { UpdateOrderDto } from './dto/Order.dto';
+import { AdminAuthGuard } from 'src/guards/admin/admin.guard';
+import { AuthenticateAdmin } from 'src/guards/admin/admin-auth.decorator';
 
 @Controller('orders')
 export class OrdersController {
@@ -12,6 +23,8 @@ export class OrdersController {
     return await this.ordersService.createOrder(userId);
   }
 
+  @UseGuards(AdminAuthGuard)
+  @AuthenticateAdmin()
   @Get('all')
   getAllOrders() {
     return this.ordersService.getAllOrders();
@@ -28,6 +41,8 @@ export class OrdersController {
     return await this.ordersService.getOrderById(orderId);
   }
 
+  @UseGuards(AdminAuthGuard)
+  @AuthenticateAdmin()
   @Patch(':id')
   async updateStatus(
     @Param('id') orderId: string,
