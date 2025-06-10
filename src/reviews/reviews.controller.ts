@@ -41,6 +41,12 @@ export class ReviewsController {
     );
   }
 
+  @Get('my-reviews')
+  async getMyReviews(@Req() req: { userId: string }) {
+    const userId = req.userId;
+    return await this.reviewsService.getAllUserReview(userId);
+  }
+
   @SkipAuth()
   @Get(':productId')
   async getReviewsByProductId(@Param('productId') productId: string) {

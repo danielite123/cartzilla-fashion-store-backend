@@ -156,6 +156,49 @@ export class ReviewsService {
     }
   }
 
+  async getAllUserReview(userId: string) {
+    try {
+      const review = await this.prismaService.review.findMany({
+        where: { userId, parentReviewId: null },
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          createdAt: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+              description: true,
+              price: true,
+              brand: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!review) {
+        throw new HttpException(
+          'No review found for this user',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return review;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to retrieve user review: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getUserReview(userId: string, productId: string) {
     try {
       const review = await this.prismaService.review.findMany({
