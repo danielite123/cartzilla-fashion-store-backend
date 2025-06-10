@@ -155,4 +155,77 @@ export class ReviewsService {
       );
     }
   }
+
+  async getUserReview(userId: string, productId: string) {
+    try {
+      const review = await this.prismaService.review.findMany({
+        where: { userId, productId, parentReviewId: null },
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          createdAt: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+              description: true,
+              price: true,
+              brand: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!review) {
+        throw new HttpException(
+          'No review found for this user and product',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return review;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to retrieve user review: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async deleteReview(reviewId: string, userId: string) {
+    try {
+      const review = await this.prismaService.review.findUnique({
+        where: { id: reviewId },
+      });
+
+      if (!review) {
+        throw new HttpException('Review not found', HttpStatus.NOT_FOUND);
+      }
+
+      if (review.userId !== userId) {
+        throw new HttpException(
+          'You do not have permission to delete this review',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      await this.prismaService.review.delete({
+        where: { id: reviewId },
+      });
+
+      return { message: 'Review deleted successfully' };
+    } catch (error) {
+      throw new HttpException(
+        `Failed to delete review: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

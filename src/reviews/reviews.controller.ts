@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/Reviews.dto';
 import { SkipAuth } from 'src/guards/auth.decorator';
@@ -43,5 +51,23 @@ export class ReviewsController {
   @Get(':productId/rating')
   async getRatingSummary(@Param('productId') productId: string) {
     return await this.reviewsService.getRatingSummary(productId);
+  }
+
+  @Get(':productId/my-review')
+  async getReviewCount(
+    @Req() req: { userId: string },
+    @Param('productId') productId: string,
+  ) {
+    const userId = req.userId;
+    return await this.reviewsService.getUserReview(userId, productId);
+  }
+
+  @Delete(':reviewId')
+  async deleteReview(
+    @Req() req: { userId: string },
+    @Param('reviewId') reviewId: string,
+  ) {
+    const userId = req.userId;
+    return await this.reviewsService.deleteReview(userId, reviewId);
   }
 }
