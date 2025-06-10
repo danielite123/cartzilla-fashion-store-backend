@@ -99,7 +99,8 @@ model Brand {
 model Review {
   id String @id @default(uuid())
   rating Int
-  content String
+  comment String
+  isVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   product        Product   @relation(fields: [productId], references: [id])
