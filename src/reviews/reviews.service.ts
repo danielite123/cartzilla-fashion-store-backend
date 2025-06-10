@@ -38,4 +38,39 @@ export class ReviewsService {
       );
     }
   }
+
+  async replyToReview(
+    parentReviewId: string,
+    productId: string,
+    userId: string,
+    comment: string,
+  ) {
+    try {
+      const parent = await this.prismaService.review.findUnique({
+        where: { id: parentReviewId },
+      });
+
+      if (!parent || parent.productId !== productId) {
+        throw new Error('Invalid parent review');
+      }
+
+      const reply = await this.prismaService.review.create({
+        data: {
+          comment: comment,
+          rating: 0,
+          isVerified: false,
+          productId: productId,
+          userId: userId,
+          parentReviewId: parentReviewId,
+        },
+      });
+
+      return reply;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to reply to review: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

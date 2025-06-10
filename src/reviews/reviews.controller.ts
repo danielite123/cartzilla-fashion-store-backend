@@ -15,4 +15,20 @@ export class ReviewsController {
     const userId = req.userId;
     return await this.reviewsService.createReview(userId, productId, dto);
   }
+
+  @Post(':productId/reply/:parentReviewId')
+  async replyToReview(
+    @Req() req: { userId: string },
+    @Param('productId') productId: string,
+    @Param('parentReviewId') parentReviewId: string,
+    @Body('comment') comment: string,
+  ) {
+    const userId = req.userId;
+    return await this.reviewsService.replyToReview(
+      parentReviewId,
+      productId,
+      userId,
+      comment,
+    );
+  }
 }
