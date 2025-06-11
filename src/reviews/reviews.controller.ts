@@ -44,7 +44,7 @@ export class ReviewsController {
   @Get('my-reviews')
   async getMyReviews(@Req() req: { userId: string }) {
     const userId = req.userId;
-    return await this.reviewsService.getAllUserReview(userId);
+    return await this.reviewsService.getUserOwnReviews(userId);
   }
 
   @SkipAuth()

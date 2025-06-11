@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateReviewDto } from './dto/Reviews.dto';
+import { OrderStatus } from '@prisma/client';
 
 @Injectable()
 export class ReviewsService {
@@ -13,12 +16,15 @@ export class ReviewsService {
           productId: productId,
           order: {
             userId: userId,
-            status: 'COMPLETED',
+            status: OrderStatus.DELIVERED,
           },
+        },
+        include: {
+          order: true,
         },
       });
 
-      const isVerified = userOrdered ? true : false;
+      const isVerified = !!userOrdered;
 
       const review = await this.prismaService.review.create({
         data: {
@@ -156,7 +162,7 @@ export class ReviewsService {
     }
   }
 
-  async getAllUserReview(userId: string) {
+  async getUserOwnReviews(userId: string) {
     try {
       const review = await this.prismaService.review.findMany({
         where: { userId, parentReviewId: null },
