@@ -15,8 +15,20 @@ export class AuthController {
   }
 
   @SkipAuth()
+  @Post('register/admin')
+  registerAdmin(@Body() credentials: CreateUserDto) {
+    return this.authService.registerAdmin(credentials);
+  }
+
+  @SkipAuth()
   @Post('login')
   login(@Body() credentials: AuthDto) {
     return this.authService.login(credentials);
+  }
+
+  @SkipAuth()
+  @Post('login/admin')
+  loginAdmin(@Body() credentials: AuthDto) {
+    return this.authService.loginAdmin(credentials);
   }
 }
